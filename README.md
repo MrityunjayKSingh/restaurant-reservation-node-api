@@ -2,7 +2,7 @@
 
 ## 🚀 Overview
 
-This project is a **production-style microservices-based Restaurant Table Reservation System** built using Node.js, Express, MongoDB, Redis, and Docker.
+This project is a production-style microservices-based Restaurant Table Reservation System built using Node.js, Express, MongoDB, Redis, and Docker.
 
 It allows:
 
@@ -87,7 +87,7 @@ MongoDB + Redis
 ### 🔽 Clone Project
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/MrityunjayKSingh/restaurant-reservation-node-api.git
 cd restaurant-reservation-microservices
 ```
 
@@ -273,7 +273,7 @@ Ensure request body includes required fields (e.g., capacity)
 
 ---
 
-## 🧠 Interview Highlights
+## 🧠 Highlights
 
 * Microservices architecture
 * API Gateway pattern
