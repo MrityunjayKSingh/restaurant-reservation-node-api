@@ -1,0 +1,15 @@
+version: '3'
+services:
+  api-gateway:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - JWT_SECRET=secret
+      - AUTH_SERVICE_URL=http://auth-service:3003
+      - TABLE_SERVICE_URL=http://table-service:3001
+      - RESERVATION_SERVICE_URL=http://reservation-service:3002
+      - REQUEST_TIMEOUT_MS=5000
+      - RATE_LIMIT_WINDOW_MS=60000
+      - RATE_LIMIT_MAX=100

@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - table-service
+      - reservation-service
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:3003
+      - TABLE_SERVICE_URL=http://table-service:3001
+      - RESERVATION_SERVICE_URL=http://reservation-service:3002
+      - JWT_SECRET=secret
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "3003:3003"
+    depends_on:
+      - mongo
+
+  table-service:
+    build: ./table-service
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo
+
+  reservation-service:
+    build: ./reservation-service
+    ports:
+      - "3002:3002"
+    depends_on:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
