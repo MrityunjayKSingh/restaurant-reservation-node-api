@@ -1,64 +1,46 @@
 # 🍽️ Restaurant Reservation System (Microservices)
 
+---
+
 ## 🚀 Overview
 
-This project is a production-style microservices-based Restaurant Table Reservation System built using Node.js, Express, MongoDB, Redis, and Docker.
+This project is a **production-style microservices-based Restaurant Table Reservation System** built using:
 
-It allows:
+* Node.js (Express)
+* MongoDB
+* Redis
+* Docker
+* JWT Authentication
 
-* Restaurant staff to manage tables
-* Customers to book and manage reservations
-* Smart table assignment based on guest count
-* Secure access using JWT authentication
+It supports:
+
+* Table management
+* Reservation booking
+* Smart table assignment
+* Distributed locking (Redis)
+* Secure API Gateway
 
 ---
 
 ## 🧠 Architecture
 
-### 🔧 Microservices
+### 🔧 Services
 
-* **API Gateway (Port 3000)**
-
-  * Central entry point
-  * Handles authentication, routing, rate limiting
-
-* **Auth Service (Port 3003)**
-
-  * JWT authentication (access + refresh tokens)
-  * User management
-
-* **Table Service (Port 3001)**
-
-  * Manage restaurant tables
-
-* **Reservation Service (Port 3002)**
-
-  * Book, view, cancel reservations
-  * Smart table assignment
-  * Redis-based locking (prevents double booking)
-
-* **MongoDB**
-
-  * Database (separate collections per service)
-
-* **Redis**
-
-  * Distributed locking for concurrency control
+| Service             | Port  |
+| ------------------- | ----- |
+| API Gateway         | 3000  |
+| Auth Service        | 3003  |
+| Table Service       | 3001  |
+| Reservation Service | 3002  |
+| MongoDB             | 27017 |
+| Redis               | 6379  |
 
 ---
 
-## 🏗️ Architecture Diagram (Logical Flow)
+### 🔁 Flow
 
 ```
-Client
-   ↓
-API Gateway (JWT + Routing)
-   ↓
------------------------------------
-| Auth | Table | Reservation Service |
------------------------------------
-   ↓
-MongoDB + Redis
+Client → API Gateway → Services → MongoDB / Redis
 ```
 
 ---
@@ -70,16 +52,17 @@ MongoDB + Redis
 * Redis (ioredis)
 * Docker + Docker Compose
 * JWT Authentication
-* Axios (service communication)
+* Joi Validation
+* Swagger API Docs
 
 ---
 
-## 📦 Installation & Setup
+## 📦 Local Setup
 
 ### ✅ Prerequisites
 
 * Node.js (v18+)
-* Docker Desktop
+* Docker & Docker Compose
 * Git
 
 ---
@@ -87,13 +70,13 @@ MongoDB + Redis
 ### 🔽 Clone Project
 
 ```bash
-git clone https://github.com/MrityunjayKSingh/restaurant-reservation-node-api.git
+git clone <your-repo-url>
 cd restaurant-reservation-microservices
 ```
 
 ---
 
-### 🐳 Run with Docker (Recommended)
+### 🐳 Run with Docker
 
 ```bash
 docker-compose up --build
@@ -101,26 +84,22 @@ docker-compose up --build
 
 ---
 
-### 🌐 Services Running On
+### 🌐 Access Services
 
-| Service             | URL                   |
-| ------------------- | --------------------- |
-| API Gateway         | http://localhost:3000 |
-| Auth Service        | http://localhost:3003 |
-| Table Service       | http://localhost:3001 |
-| Reservation Service | http://localhost:3002 |
+| Service      | URL                        |
+| ------------ | -------------------------- |
+| API Gateway  | http://localhost:3000      |
+| Swagger Docs | http://localhost:3000/docs |
 
 ---
 
-## 🔐 Authentication Flow
+## 🔐 Authentication
 
-### 1. Login
+### Login
 
 ```http
 POST /auth/login
 ```
-
-**Body**
 
 ```json
 {
@@ -129,29 +108,12 @@ POST /auth/login
 }
 ```
 
-**Response**
-
-```json
-{
-  "accessToken": "...",
-  "refreshToken": "..."
-}
-```
-
 ---
 
-### 2. Use Token
+### Use Token
 
 ```http
 Authorization: Bearer <accessToken>
-```
-
----
-
-### 3. Refresh Token
-
-```http
-POST /auth/refresh
 ```
 
 ---
@@ -160,15 +122,13 @@ POST /auth/refresh
 
 ---
 
-### 🪑 Table Service
+### 🪑 Tables
 
-#### ➤ Create Table
+#### Create Table
 
 ```http
 POST /tables
 ```
-
-**Body**
 
 ```json
 {
@@ -180,7 +140,7 @@ POST /tables
 
 ---
 
-#### ➤ Get All Tables
+#### Get Tables
 
 ```http
 GET /tables
@@ -188,15 +148,13 @@ GET /tables
 
 ---
 
-### 📅 Reservation Service
+### 📅 Reservations
 
-#### ➤ Book Reservation (Smart Assignment)
+#### Book Reservation
 
 ```http
 POST /reservations
 ```
-
-**Body**
 
 ```json
 {
@@ -208,7 +166,7 @@ POST /reservations
 
 ---
 
-#### ➤ Get Reservation
+#### Get Reservation
 
 ```http
 GET /reservations/:id
@@ -216,7 +174,7 @@ GET /reservations/:id
 
 ---
 
-#### ➤ Cancel Reservation
+#### Cancel Reservation
 
 ```http
 DELETE /reservations/:id
@@ -228,48 +186,122 @@ DELETE /reservations/:id
 
 ### ✅ Smart Table Assignment
 
-* Finds smallest available table for given guest count
-* Optimizes seating utilization
-
----
+* Finds smallest suitable table
+* Maximizes utilization
 
 ### ❌ Double Booking Prevention
 
-* Redis distributed locking
-* Prevents concurrent booking conflicts
+* Redis locking prevents race conditions
 
 ---
 
-### ⏱ Time Slots
+## 📬 API Testing
 
-* Fixed reservation slots (e.g., 18:00–20:00)
+Use Postman collection included in project.
 
 ---
 
-## 🧪 Testing
 
-You can test APIs using:
+# ☁️ AWS Deployment Guide (EC2 + Docker)
 
-* Postman
-* cURL
-* REST Client (VS Code)
+---
+
+## 🪪 1. Launch EC2 Instance
+
+* OS: Ubuntu 22.04
+* Instance: t2.micro
+* Storage: 20GB
+
+---
+
+## 🔐 2. Configure Security Group
+
+Allow:
+
+| Port      | Purpose             |
+| --------- | ------------------- |
+| 22        | SSH                 |
+| 3000      | API Gateway         |
+| 3001–3003 | Services (optional) |
+
+---
+
+## 🔑 3. Connect to EC2
+
+```bash
+ssh -i your-key.pem ubuntu@<EC2-IP>
+```
+
+---
+
+## ⚙️ 4. Install Docker
+
+```bash
+sudo apt update
+sudo apt install docker.io -y
+sudo systemctl start docker
+sudo systemctl enable docker
+```
+
+---
+
+## ⚙️ 5. Install Docker Compose
+
+```bash
+sudo apt install docker-compose -y
+```
+
+---
+
+## 📥 6. Upload Project
+
+### Option A (Recommended)
+
+```bash
+git clone <your-repo-url>
+cd restaurant-reservation-microservices
+```
+
+---
+
+## 🐳 7. Run Application
+
+```bash
+docker-compose up --build -d
+```
+
+---
+
+## 🌐 8. Access Application
+
+```
+http://<EC2-PUBLIC-IP>:3000
+```
+
+---
+
+## 🧪 Test Login
+
+```
+POST http://<EC2-IP>:3000/auth/login
+```
 
 ---
 
 ## ⚠️ Common Issues
 
-### ❌ Service not reachable
+### ❌ Cannot access API
 
-```bash
-docker-compose down -v
-docker-compose up --build
-```
+* Check EC2 Security Group
+* Check `docker ps`
 
 ---
 
-### ❌ Missing data error
+### ❌ Services not connecting
 
-Ensure request body includes required fields (e.g., capacity)
+```bash
+docker-compose restart
+```
 
 ---
 
@@ -277,18 +309,18 @@ Ensure request body includes required fields (e.g., capacity)
 
 * Microservices architecture
 * API Gateway pattern
-* JWT authentication with refresh tokens
-* Redis for distributed locking
+* JWT authentication (access + refresh tokens)
+* Redis distributed locking
 * Dockerized deployment
-* Smart algorithm for table allocation
+* AWS EC2 hosting
 
 ---
 
 ## 🚀 Future Improvements
 
-* Kafka (event-driven architecture)
-* Role-based access control (RBAC)
-* API rate limiting with Redis
+* Kafka (event-driven)
+* RBAC (role-based access)
+* Rate limiting (Redis)
 * OpenTelemetry tracing
 * Kubernetes deployment
 
@@ -302,4 +334,4 @@ Mrityunjay Singh
 
 ## 📌 License
 
-This project is for learning and demonstration purposes.
+For learning and demonstration purposes.
